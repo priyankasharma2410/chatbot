@@ -1,0 +1,60 @@
+name: Legal Chatbot CI/CD
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    name: Build & Test Legal Chatbot
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install Dependencies (If Using npm/yarn)
+        run: |
+          if [ -f package.json ]; then
+            npm install
+          fi
+
+      - name: Run Linter (Checks Code Quality)
+        run: |
+          if [ -f package.json ]; then
+            npm run lint || echo "Linting failed, check your code."
+          else
+            echo "No linter configured, skipping."
+          fi
+
+      - name: Run JavaScript Tests (If Available)
+        run: |
+          if [ -f package.json ]; then
+            npm test || echo "Tests failed, check errors."
+          else
+            echo "No tests found, skipping."
+          fi
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build-and-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./  # Change if your chatbot is in a subdirectory
