@@ -10,7 +10,7 @@ on:
 
 jobs:
   build-and-test:
-    name: Build & Test Legal Chatbot
+    name: Build & Test Legal Chatbot 
     runs-on: ubuntu-latest
 
     steps:
